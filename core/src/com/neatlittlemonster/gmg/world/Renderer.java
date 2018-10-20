@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.neatlittlemonster.gmg.GMG;
 import com.neatlittlemonster.gmg.ui.Cell;
 
@@ -15,13 +14,14 @@ public class Renderer {
 
     private static final String TAG = "Renderer";
 
+    private Editor editor;
     private final Color bgColor;
     private SpriteBatch batch;
     private OrthographicCamera camera;
-    private Array<Cell> cells;
     private ShapeRenderer shapeRenderer;
 
-    public Renderer() {
+    public Renderer(Editor _editor) {
+        editor = _editor;
         bgColor = new Color(222/255.0f, 227/255.0f, 233/255.0f, 1);
         batch = new SpriteBatch();
 
@@ -34,22 +34,22 @@ public class Renderer {
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.setProjectionMatrix(camera.combined);
 
-        cells = new Array<Cell>();
-
-        float midX = camera.viewportWidth / 2 - (GMG.tileWidth / 2);
-        float midY = camera.viewportHeight / 2 - (GMG.tileWidth / 2);
-
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                Vector2 pos = new Vector2(midX + (GMG.tileHeight * i), midY + (GMG.tileWidth * j));
-                Cell cell = new Cell(pos);
-                cells.add(cell);
-            }
-        }
-
+        centerCamera();
     }
 
-    public void render(float dt) {
+    private void centerCamera() {
+        float lastXPos, lastYPos;
+
+        Cell lastCell = editor.getCells().get(editor.getCells().size - 1);
+        lastXPos = lastCell.getPosition().x;
+        lastYPos = lastCell.getPosition().y;
+
+        camera.position.x = lastXPos / 2 + (camera.viewportWidth / 2);
+        camera.position.y = lastYPos / 2 + (camera.viewportHeight / 2);
+        camera.update();
+    }
+
+    public void render(float _dt) {
 
         Gdx.gl.glClearColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -59,7 +59,7 @@ public class Renderer {
         batch.begin();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
-        for (Cell cell : cells) {
+        for (Cell cell : editor.getCells()) {
             cell.render(shapeRenderer);
         }
 
@@ -69,9 +69,9 @@ public class Renderer {
 
     }
 
-    public void resize(int width, int height) {
-        camera.viewportWidth = width;
-        camera.viewportHeight = height;
+    public void resize(int _width, int _height) {
+        camera.viewportWidth = _width;
+        camera.viewportHeight = _height;
         camera.update();
 
         batch.setProjectionMatrix(camera.combined);

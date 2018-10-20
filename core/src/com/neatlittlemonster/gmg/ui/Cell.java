@@ -40,4 +40,8 @@ public class Cell {
 
     }
 
+    public Vector2 getPosition() {
+        return position;
+    }
+
 }

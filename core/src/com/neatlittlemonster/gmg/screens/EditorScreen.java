@@ -2,22 +2,21 @@ package com.neatlittlemonster.gmg.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.neatlittlemonster.gmg.gmghelpers.GMGHelper;
+import com.neatlittlemonster.gmg.world.Editor;
 import com.neatlittlemonster.gmg.world.Renderer;
-import com.neatlittlemonster.gmg.world.World;
 
 public class EditorScreen implements Screen {
 
     private static final String TAG = "EditorScreen";
 
-    private World world;
+    private Editor editor;
     private Renderer renderer;
 
     public EditorScreen() {
         Gdx.app.log(TAG, "created.");
 
-        world = new World();
-        renderer = new Renderer();
+        editor = new Editor();
+        renderer = new Renderer(editor);
     }
 
     @Override
@@ -26,14 +25,14 @@ public class EditorScreen implements Screen {
     }
 
     @Override
-    public void render(float dt) {
-        world.update(dt);
-        renderer.render(dt);
+    public void render(float _dt) {
+        editor.update(_dt);
+        renderer.render(_dt);
     }
 
     @Override
-    public void resize(int width, int height) {
-        renderer.resize(width, height);
+    public void resize(int _width, int _height) {
+        renderer.resize(_width, _height);
 
     }
 
