@@ -2,8 +2,8 @@ package com.neatlittlemonster.gmg.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.neatlittlemonster.gmg.world.Editor;
-import com.neatlittlemonster.gmg.world.Renderer;
+import com.neatlittlemonster.gmg.editor.Editor;
+import com.neatlittlemonster.gmg.editor.Renderer;
 
 public class EditorScreen implements Screen {
 
