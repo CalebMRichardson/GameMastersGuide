@@ -16,13 +16,14 @@ public class CameraController implements InputProcessor{
     private static final String TAG = "CameraController";
     private float zoomSpeed = .1f;
     private float moveSpeed = 20f;
-    private float xMovement, yMovement;
     private static final int A_KEY = Input.Keys.A;
     private static final int D_KEY = Input.Keys.D;
     private static final int S_KEY = Input.Keys.S;
     private static final int W_KEY = Input.Keys.W;
-
+    private static final int SPACE = Input.Keys.SPACE;
     private OrthographicCamera camera;
+    private Vector3 startingCamPos;
+    private float startingCamZoom;
 
     public CameraController(OrthographicCamera _camera) {
 
@@ -33,26 +34,22 @@ public class CameraController implements InputProcessor{
 
         Gdx.input.setInputProcessor(inputMultiplexer);
 
+        startingCamPos = new Vector3(camera.position.x, camera.position.y, camera.position.z);
+        startingCamZoom = camera.zoom;
     }
 
     @Override
     public boolean keyDown(int keycode) {
 
-        if (keycode == Input.Keys.A) xMovement = -1f;
-        else if (keycode == Input.Keys.D) xMovement = 1f;
-        if (keycode == Input.Keys.S) yMovement = -1f;
-        else if (keycode == Input.Keys.W) yMovement = 1;
+        if (keycode == SPACE) {
+            resetCamera();
+        }
 
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-
-        if (keycode == Input.Keys.A) xMovement = 0;
-        if (keycode == Input.Keys.D) xMovement = 0;
-        if (keycode == Input.Keys.S) yMovement = 0;
-        if (keycode == Input.Keys.W) yMovement = 0;
 
         return false;
     }
@@ -87,8 +84,21 @@ public class CameraController implements InputProcessor{
 
         if (amount == -1) {
             Vector3 mouseToWorld = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            camera.position.x = mouseToWorld.x;
-            camera.position.y = mouseToWorld.y;
+            Vector2 difference = new Vector2(mouseToWorld.x - camera.position.x, mouseToWorld.y - camera.position.y);
+
+
+            // TODO fix scroll to position
+            if (difference.x > 0) {
+                camera.position.x += 50;
+            } else if (difference.x < 0) {
+                camera.position.x -= 50;
+            }
+
+            if (difference.y > 0) {
+                camera.position.y += 50;
+            } else if (difference.y < 0) {
+                camera.position.y -= 50;
+            }
         }
 
         camera.zoom = camera.zoom + (amount * zoomSpeed);
@@ -101,5 +111,11 @@ public class CameraController implements InputProcessor{
         // Interpolate the camera from its current position
         // to the position of the direction its moving
 
+    }
+
+    private void resetCamera() {
+
+        camera.position.set(startingCamPos);
+        camera.zoom = startingCamZoom;
     }
 }

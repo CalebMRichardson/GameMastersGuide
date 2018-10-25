@@ -36,9 +36,10 @@ public class Renderer {
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.setProjectionMatrix(camera.combined);
 
+        centerCamera();
+
         camController = new CameraController(camera);
 
-        centerCamera();
     }
 
     private void centerCamera() {
