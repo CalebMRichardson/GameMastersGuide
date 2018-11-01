@@ -15,6 +15,7 @@ public class CameraController implements InputProcessor{
 
     private static final String TAG = "CameraController";
     private float zoomSpeed = .1f;
+    private float zoomDistance = 50f;
     private float moveSpeed = 20f;
     private static final int A_KEY = Input.Keys.A;
     private static final int D_KEY = Input.Keys.D;
@@ -83,25 +84,22 @@ public class CameraController implements InputProcessor{
     public boolean scrolled(int amount) {
 
         if (amount == -1) {
+
+            if (camera.zoom < 0.08) {
+                camera.zoom = 0.08f;
+                return false;
+            }
+
             Vector3 mouseToWorld = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             Vector2 difference = new Vector2(mouseToWorld.x - camera.position.x, mouseToWorld.y - camera.position.y);
 
 
-            // TODO fix scroll to position
-            if (difference.x > 0) {
-                camera.position.x += 50;
-            } else if (difference.x < 0) {
-                camera.position.x -= 50;
-            }
-
-            if (difference.y > 0) {
-                camera.position.y += 50;
-            } else if (difference.y < 0) {
-                camera.position.y -= 50;
-            }
+            camera.position.x += difference.nor().x * zoomDistance;
+            camera.position.y += difference.nor().y * zoomDistance;
         }
 
         camera.zoom = camera.zoom + (amount * zoomSpeed);
+        GMGHelper.log(TAG, Float.toString(camera.zoom));
 
         return false;
     }
